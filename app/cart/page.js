@@ -23,12 +23,10 @@ export default function CartPage() {
   async function createCheckout() {
     try {
       const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
-      const lineItems = Object.keys(cart).map((item, itemIndex) => {
-        return {
-          price: item,
-          quantity: cart[item].quantity,
-        };
-      });
+      const lineItems = Object.keys(cart).map((item) => ({
+        price: item,
+        quantity: cart[item].quantity,
+      }));
 
       const response = await fetch(baseURL + "/api/checkout", {
         method: "POST",
@@ -37,10 +35,18 @@ export default function CartPage() {
         },
         body: JSON.stringify({ lineItems }),
       });
+
       const data = await response.json();
-      if (response.ok) {
-        console.log(data);
+
+      if (!response.ok) {
+        console.error("Checkout API failed:", data);
+        return;
+      }
+
+      if (data?.url) {
         router.push(data.url);
+      } else {
+        console.error("No URL received from checkout API:", data);
       }
     } catch (err) {
       console.log("Error creating checkout", err.message);
