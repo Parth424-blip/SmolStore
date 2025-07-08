@@ -3,8 +3,10 @@ import Products from "@/components/Products";
 
 export async function getProducts() {
   try {
-    const response = await fetch("/api/products");
+    const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+    const response = await fetch(baseUrl + "/api/products");
     const products = await response.json();
+
     return products;
   } catch (err) {
     console.log(err.stack);
